@@ -1,0 +1,25 @@
+# Any DS_Store in any directory
+**/.DS_Store
+
+*.apk
+
+# Any file that contatins BackUpThisFolder_ButDontShipItWithYourGame
+*BackUpThisFolder_ButDontShipItWithYourGame*/
+
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+/.vscode/
+
+# Rider generated
+/*.csproj
+/*.meta
+*.sln
+.idea/
+*.csproj.user
