@@ -32,6 +32,7 @@ public class SSVEP : MonoBehaviour
 
             Color newColor = new Color(originalColor.r, originalColor.g, originalColor.b, square);
             objectRenderer.material.color = newColor;
+
         }
     }
 }

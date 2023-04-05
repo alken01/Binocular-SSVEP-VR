@@ -1,7 +1,7 @@
 # Any DS_Store in any directory
 **/.DS_Store
 
-*.apk
+# *.apk
 
 # Any file that contatins BackUpThisFolder_ButDontShipItWithYourGame
 *BackUpThisFolder_ButDontShipItWithYourGame*/
