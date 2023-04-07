@@ -6,14 +6,14 @@ public class ChangeBlock : MonoBehaviour
 {
     // Script to show or hide a block when a button is pressed on the controller
     // depending on the current state of the block
-    public int targetBlockNumber;
-    public int maxBlockNumber;
+    private int targetBlockNumber;
 
     private int currentBlockNumber;
     private Renderer[] renderers;
 
     void Start(){
-        currentBlockNumber = 0;
+        targetBlockNumber = GlobalVariables.getNextNr();
+        currentBlockNumber = 0; 
         renderers = GetComponentsInChildren<Renderer>(true);
     }
 
@@ -22,21 +22,29 @@ public class ChangeBlock : MonoBehaviour
         if (OVRInput.GetDown(OVRInput.Button.One))
         { 
             currentBlockNumber++;
+        }     
 
-            if (currentBlockNumber >= maxBlockNumber)
-            {
-                currentBlockNumber = 0;
-            }
-            
-            if (currentBlockNumber == targetBlockNumber)
-            {
-                SetBlockVisibility(true);
-            }
-            else
-            {
-                SetBlockVisibility(false);
-            }
-        }        
+        if (OVRInput.GetDown(OVRInput.Button.Two))
+        { 
+            currentBlockNumber--;
+        }
+
+        if (currentBlockNumber >= GlobalVariables.MAX_NR){
+            currentBlockNumber = 0;
+        }
+
+        if(currentBlockNumber<0){
+            currentBlockNumber = GlobalVariables.MAX_NR-1;
+        }
+        
+        if (currentBlockNumber == targetBlockNumber){
+            SetBlockVisibility(true);
+        }
+        else
+        {
+            SetBlockVisibility(false);
+        }
+              
     }
 
     void SetBlockVisibility(bool set)
