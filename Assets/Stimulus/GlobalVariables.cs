@@ -13,6 +13,5 @@ public static class GlobalVariables
         GlobalVariables.MAX_NR++;
         return GlobalVariables.MAX_NR-1;
     }
-    
 
 }

@@ -1,38 +1,28 @@
 using UnityEngine;
 
-public class SSVEP : MonoBehaviour
-{
-    public float frequency; // Set the frequency in Hertz (cycles per second)
+public class SSVEP : MonoBehaviour {
+    [SerializeField] private float frequency;
+    [SerializeField] private bool sine;
     
-    private float dutyCycle;
     private Renderer objectRenderer;
-    private Color originalColor;
     private float elapsedTime;
-    private bool isOn = false;
 
-    void Start()
-    {
+    private void Start() {
         objectRenderer = GetComponent<Renderer>();
-        originalColor = objectRenderer.material.color;
         elapsedTime = 0f;
-        dutyCycle = 0.5f;
     }
 
-    void Update()
-    {
-        if (OVRInput.GetDown(OVRInput.Button.Two)) {
-            isOn = !isOn;
-        }
+    private void Update() {
+        // Add the time since the last frame to the elapsed time
+        elapsedTime += Time.deltaTime;
+        float t = elapsedTime * frequency;
 
-        if(isOn){
-            elapsedTime += Time.deltaTime;
-            
-            float t = elapsedTime * frequency;
-            float square = Mathf.Repeat(t, 1f) < dutyCycle ? 1f : 0f;
+        float value;
+        if (sine) value = (Mathf.Sin(t * Mathf.PI * 2f) + 1f) / 2f; // sine wave
+        else value = Mathf.Repeat(t, 1f) < 0.5f ? 0f : 1f; // square wave
 
-            Color newColor = new Color(originalColor.r, originalColor.g, originalColor.b, square);
-            objectRenderer.material.color = newColor;
-
-        }
+        // Change the alpha value
+        objectRenderer.material.color = new Color(1f, 1f, 1f, value);
     }
+
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Change : MonoBehaviour
+public class ChangeSprite : MonoBehaviour
 {
     public Sprite newSprite;  // The new sprite to use
 
