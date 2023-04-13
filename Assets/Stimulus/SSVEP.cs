@@ -4,12 +4,12 @@ using System.Collections.Generic;
 public class SSVEP : MonoBehaviour {
     [SerializeField] private float frequency;
     [SerializeField] private bool sine;
-    [SerializeField] private string fileName = "savedData.txt";
     [SerializeField] private bool sendData = false;
 
     private Renderer objectRenderer;
     private float elapsedTime;
     private List<float> valuesList;
+    private TCPClient client;
 
     private void Start() {
         objectRenderer = GetComponent<Renderer>();
@@ -17,6 +17,7 @@ public class SSVEP : MonoBehaviour {
         valuesList = new List<float>();
         // if the frequency is 0, make hte object invisible
         if (frequency == 0f) objectRenderer.enabled = false;
+        if(sendData) client = GetComponentInParent<TCPClient>();
     }
 
     private void Update() {
@@ -34,27 +35,21 @@ public class SSVEP : MonoBehaviour {
         objectRenderer.material.color = new Color(1f, 1f, 1f, value);
         // Save the value in the list
         valuesList.Add(value);
+
+        if(elapsedTime>5 && sendData) SendDataTCP();
     }
 
     public void StopSSVEP(){
         objectRenderer.material.color = new Color(1f, 1f, 1f, 1f);
     }
 
-    // Function to retrieve the list of values
-    public List<float> GetValuesList() {
-        return valuesList;
-    }
-
-    private void OnApplicationQuit()
-    {
-        //if saveData is true, save the data from valuesList locally
-        if (sendData) {
-            string path = Application.dataPath + "/" + fileName;
-            string data = "";
-            foreach (float value in valuesList) {
-                data += value + "\n";
-            }
-            System.IO.File.WriteAllText(path, data);
+    public void SendDataTCP(){
+        string data = "time: " + elapsedTime + "\n";
+        foreach (float val in valuesList) {
+            data += val + "\n";
         }
+        client.SendTCP(data);
+        sendData = false;
+        frequency = 0f;
     }
 }

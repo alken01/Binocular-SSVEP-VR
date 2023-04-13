@@ -3,14 +3,11 @@ using UnityEngine;
 public class ExperimentData : MonoBehaviour
 {
     private int experimentNumber;
-    private int maxTargets;
-    private int currentTarget;
     private SSVEPManager ssvepManager;
 
     private void Start()
     {
-        maxTargets = transform.childCount;
-        currentTarget = 0;
+        experimentNumber = GlobalVariables.getNextNr();
         ssvepManager = GetComponent<SSVEPManager>();
         SetVisibility(false);
     }

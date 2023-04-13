@@ -45,7 +45,7 @@ public class SSVEPManager : MonoBehaviour {
                 SSVEP = false;
                 AdjustSSVEP(SSVEP);
                 // send the pause message
-                client.SendTCP(pauseMsg);
+                // client.SendTCP(pauseMsg);
                 // reset the timer
                 elapsedTime = 0f;
             }
@@ -56,7 +56,7 @@ public class SSVEPManager : MonoBehaviour {
                 SSVEP = true;
                 AdjustSSVEP(SSVEP);
                 // send the resume message
-                client.SendTCP(resumeMsg);
+                // client.SendTCP(resumeMsg);
                 // reset the timer
                 elapsedTime = 0f;
             }

@@ -11,14 +11,8 @@ public class ExperimentManager : MonoBehaviour
         currentExperimentNumber = -1;
         client = GetComponent<TCPClient>();
         experimentDatas = GetComponentsInChildren<ExperimentData>();
-
-        for (int i = 0; i < experimentDatas.Length; i++)
-        {
-            experimentDatas[i].SetExperimentNumber(i); // give all Experiments a unique experimentNumber
-            experimentDatas[i].SetVisibility(false); // make it invisible at the start
-        }
         // nothing at start
-        SetExperiment(currentExperimentNumber);
+        SetExperiment(-1);
     }
 
    
