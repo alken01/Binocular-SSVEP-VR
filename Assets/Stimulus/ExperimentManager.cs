@@ -4,22 +4,28 @@ public class ExperimentManager : MonoBehaviour
 {
     private int currentExperimentNumber;
     private TCPClient client;
+    private ExperimentData[] experimentDatas;
 
-    public void Start(){
+    private void Awake()
+    {
         currentExperimentNumber = -1;
         client = GetComponent<TCPClient>();
-        // give all children who have the ExperimentData script a unique experimentNumber
-        int number = 0;
-        foreach (Transform child in transform)
+        experimentDatas = GetComponentsInChildren<ExperimentData>();
+
+        for (int i = 0; i < experimentDatas.Length; i++)
         {
-            ExperimentData experimentData = child.GetComponent<ExperimentData>();
-            if (experimentData != null)
-            {
-                experimentData.SetExperimentNumber(number);
-                number++;
-            }
-            // also make them invisible
-            experimentData.SetVisibility(false);
+            experimentDatas[i].SetExperimentNumber(i); // give all Experiments a unique experimentNumber
+            experimentDatas[i].SetVisibility(false); // make it invisible at the start
+        }
+        // nothing at start
+        SetExperiment(currentExperimentNumber);
+    }
+
+   
+    private void Update() {
+        // If two is pressed, go to the next experiment
+        if (OVRInput.GetDown(OVRInput.Button.Two)) {
+            NextExperiment();
         }
     }
 
@@ -27,26 +33,25 @@ public class ExperimentManager : MonoBehaviour
     {
         currentExperimentNumber = experimentNumber;
         UpdateExperimentVisibility();
-        client.SendTCP("Started Experiment: " + experimentNumber);
+    }
+
+    public void NextExperiment()
+    {
+        currentExperimentNumber++;
+        // if the currentExperimentNumber is out of bounds, set it to -1
+        if (currentExperimentNumber >= experimentDatas.Length)
+        {
+            currentExperimentNumber = -1;
+        }
+        UpdateExperimentVisibility();
     }
 
     private void UpdateExperimentVisibility()
     {
-        // make all the children that Contain ExperimentData inactive
-        foreach (Transform child in transform)
+        foreach (ExperimentData experimentData in experimentDatas)
         {
-            ExperimentData experimentData = child.GetComponent<ExperimentData>();
-            if (experimentData != null)
-            {
-                // if the experimentNumber of the child is equal to the currentExperimentNumber
-                // then set the child to active
-                if(experimentData.GetExperimentNumber() == currentExperimentNumber)
-                    experimentData.SetVisibility(true);
-                else
-                    experimentData.SetVisibility(false);
-            }
+            // adjust to make visible only the currentExperimentNumber 
+            experimentData.SetVisibility(experimentData.GetExperimentNumber() == currentExperimentNumber);
         }
     }
-
-
 }

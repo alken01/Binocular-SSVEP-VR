@@ -12,34 +12,29 @@ public class SSVEPManager : MonoBehaviour {
     private float elapsedTime;
     
     private TCPClient client;
-    public int maxTargets;
+    
     private ExperimentData experimentData;
+    private SSVEP[] ssvepComponents;
     private bool start;
 
-    private void Start() {
+    private void Awake() {
         experimentData = GetComponent<ExperimentData>();
-        startMsg = "SSVEP Experiment: " + experimentData.GetExperimentNumber() + " : " + startMsg;
-        resumeMsg = "SSVEP Experiment: " + experimentData.GetExperimentNumber() + " : " + resumeMsg;
-        pauseMsg = "SSVEP Experiment: " + experimentData.GetExperimentNumber() + " : " + pauseMsg;
-
+        startMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + startMsg;
+        resumeMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + resumeMsg;
+        pauseMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + pauseMsg;
         client = GetComponentInParent<TCPClient>();
-        elapsedTime = 0f;
-        // maxTargets is the number of children
-        maxTargets = transform.childCount;
-        SSVEP = false;
-        start = false;
+        ssvepComponents = GetComponentsInChildren<SSVEP>(true);
     }
 
-    public void SetStart(bool set)
-    {
-        elapsedTime = 0f;
+    public void SetStart(bool set){
         start = set;
         SSVEP = set;
-        // AdjustSSVEP(start);
+        AdjustSSVEP(start);
+        if(set) client.SendTCP(startMsg);
     }
 
     private void Update() {
-        if (!start) return;
+        if (start != true) return;
 
         elapsedTime += Time.deltaTime;
 
@@ -51,7 +46,6 @@ public class SSVEPManager : MonoBehaviour {
                 AdjustSSVEP(SSVEP);
                 // send the pause message
                 client.SendTCP(pauseMsg);
-
                 // reset the timer
                 elapsedTime = 0f;
             }
@@ -63,7 +57,6 @@ public class SSVEPManager : MonoBehaviour {
                 AdjustSSVEP(SSVEP);
                 // send the resume message
                 client.SendTCP(resumeMsg);
-
                 // reset the timer
                 elapsedTime = 0f;
             }
@@ -71,24 +64,13 @@ public class SSVEPManager : MonoBehaviour {
     }
 
     private void AdjustSSVEP(bool status) {
-        // loop through all the children
-        Transform[] children = transform.GetComponentsInChildren<Transform>(true);
-        foreach (Transform child in children) {
-            // adjust the SSVEP script in the children
-            SSVEP ssvep = child.GetComponent<SSVEP>();
-            if (ssvep != null) {
-                ssvep.enabled = status;
-            }
-
-            // check for the grandchildren
-            Transform[] grandChildren = child.GetComponentsInChildren<Transform>(true);
-            foreach (Transform grandChild in grandChildren) {
-                // adjust the SSVEP script in the grandchildren
-                SSVEP grandChildSSVEP = grandChild.GetComponent<SSVEP>();
-                if (grandChildSSVEP != null) {
-                    grandChildSSVEP.enabled = status;
-                }
-            }
+    // Loop through all the ssvep components
+        foreach (SSVEP ssvep in ssvepComponents) {
+            // if false, return the alpha value to 1f
+            if (!status) ssvep.StopSSVEP();
+            // then disable the script
+            ssvep.enabled = status;
         }
     }
+
 }
