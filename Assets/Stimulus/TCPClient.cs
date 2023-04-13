@@ -20,9 +20,8 @@ public class TCPClient : MonoBehaviour {
 
     private void Update() {
         // R2 button to connect
-        if(OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) && !isConnected) {
-            ConnectToServer();
-
+        if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) && !isConnected) {
+            StartCoroutine(ConnectToServer());
         }
 
         // A button to disconnect
@@ -31,7 +30,7 @@ public class TCPClient : MonoBehaviour {
         }
     }
 
-    private void ConnectToServer() {
+    private IEnumerator ConnectToServer() {
         try {
             client = new TcpClient(serverIP, serverPort);
             stream = client.GetStream();
@@ -49,21 +48,27 @@ public class TCPClient : MonoBehaviour {
         } catch (SocketException ex) {
             Debug.LogError("Error connecting to server: " + ex.Message);
         }
+        yield return null;
     }
 
     private IEnumerator ReceiveTCP() {
         while (isConnected) {
-            if (stream.DataAvailable) {
-                byte[] data = new byte[256];
-                int bytes = stream.Read(data, 0, data.Length);
-                string message = Encoding.UTF8.GetString(data, 0, bytes);
-                try {
-                    experimentManager.SetExperiment(int.Parse(message));
-                    SendTCP("Set Experiment: "+message);
-                } catch (System.FormatException ex) {
-                    experimentManager.SetExperiment(0);
-                    SendTCP("Error: Set Experiment: 0");
+            try {
+                if (stream.DataAvailable) {
+                    SendTCP("DataAvailable");
+                    byte[] data = new byte[256];
+                    int bytes = stream.Read(data, 0, data.Length);
+                    string message = Encoding.UTF8.GetString(data, 0, bytes);
+                    try {
+                        experimentManager.SetExperiment(int.Parse(message));
+                        SendTCP("Set Experiment: " + message);
+                    } catch (System.FormatException ex) {
+                        experimentManager.SetExperiment(0);
+                        SendTCP("Error: Set Experiment: 0");
+                    }
                 }
+            } catch (System.Exception ex) {
+                Debug.LogError("Error receiving data: " + ex.Message);
             }
             yield return null;
         }
@@ -86,4 +91,15 @@ public class TCPClient : MonoBehaviour {
         return isConnected;
     }
 
+    private void OnDestroy() {
+        if (isConnected) {
+            CloseConnection();
+        }
+    }
+
+    private void OnApplicationQuit() {
+        if (isConnected) {
+            CloseConnection();
+        }
+    }
 }

@@ -30,19 +30,17 @@ public class SSVEPManager : MonoBehaviour {
         start = false;
     }
 
-    private void Update() {
-        if (start) {
-            ActivateSSVEP();
-        }
-    }
     public void SetStart(bool set)
     {
+        elapsedTime = 0f;
         start = set;
-        AdjustSSVEP(start);
+        SSVEP = set;
+        // AdjustSSVEP(start);
     }
 
-    private void ActivateSSVEP() {
-        // increment the timer
+    private void Update() {
+        if (!start) return;
+
         elapsedTime += Time.deltaTime;
 
         if (SSVEP) {

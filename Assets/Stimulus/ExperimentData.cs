@@ -16,11 +16,11 @@ public class ExperimentData : MonoBehaviour
 
     public void SetVisibility(bool visible)
     {
-        gameObject.SetActive(visible);
         // adjust the SSVEP Manager
         SSVEPManager ssvepManager = GetComponent<SSVEPManager>();
         ssvepManager.SetStart(visible);
-
+        // make it visible
+        gameObject.SetActive(visible);
     }
 
 }

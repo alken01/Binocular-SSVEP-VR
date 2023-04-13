@@ -27,6 +27,7 @@ public class ExperimentManager : MonoBehaviour
     {
         currentExperimentNumber = experimentNumber;
         UpdateExperimentVisibility();
+        client.SendTCP("Started Experiment: " + experimentNumber);
     }
 
     private void UpdateExperimentVisibility()
