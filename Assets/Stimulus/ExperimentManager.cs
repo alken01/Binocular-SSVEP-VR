@@ -8,15 +8,19 @@ public class ExperimentManager : MonoBehaviour
 
     private void Awake()
     {
-        currentExperimentNumber = -1;
+        // set ovr refresh rate to 90Hz
+        OVRManager.display.displayFrequency = 90f;
+        
+        // initialize the TCP client
         client = GetComponent<TCPClient>();
         experimentDatas = GetComponentsInChildren<ExperimentData>();
-        // nothing at start
+
+        // set the current experiment number to -1
         SetExperiment(-1);
     }
 
    
-    private void Update() {
+    private void FixedUpdate() {
         // If two is pressed, go to the next experiment
         if (OVRInput.GetDown(OVRInput.Button.Two)) {
             NextExperiment();

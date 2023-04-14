@@ -8,19 +8,17 @@ public class SSVEP : MonoBehaviour {
 
     private Renderer objectRenderer;
     private float elapsedTime;
-    private List<float> valuesList;
     private TCPClient client;
 
     private void Start() {
         objectRenderer = GetComponent<Renderer>();
         elapsedTime = 0f;
-        valuesList = new List<float>();
-        // if the frequency is 0, make hte object invisible
+        // if the frequency is 0, make the object invisible
         if (frequency == 0f) objectRenderer.enabled = false;
         if(sendData) client = GetComponentInParent<TCPClient>();
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         // if the frequency is 0, do nothing
         if (frequency == 0f) return;
         // Add the time since the last frame to the elapsed time
@@ -33,23 +31,15 @@ public class SSVEP : MonoBehaviour {
 
         // Change the alpha value
         objectRenderer.material.color = new Color(1f, 1f, 1f, value);
-        // Save the value in the list
-        valuesList.Add(value);
 
-        if(elapsedTime>5 && sendData) SendDataTCP();
+        // if(elapsedTime<5 && sendData) {
+        //     string data = elapsedTime + "," + value + "\n";
+        //     client.SendTCP(data);
+        // }
     }
 
     public void StopSSVEP(){
         objectRenderer.material.color = new Color(1f, 1f, 1f, 1f);
     }
 
-    public void SendDataTCP(){
-        string data = "time: " + elapsedTime + "\n";
-        foreach (float val in valuesList) {
-            data += val + "\n";
-        }
-        client.SendTCP(data);
-        sendData = false;
-        frequency = 0f;
-    }
 }

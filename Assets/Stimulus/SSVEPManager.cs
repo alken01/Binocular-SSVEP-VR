@@ -6,6 +6,7 @@ public class SSVEPManager : MonoBehaviour {
     [SerializeField] private string pauseMsg = "pause";
     [SerializeField] private float epochTime = 6f;
     [SerializeField] private float pauseTime = 3f;
+    [SerializeField] private int numberOfTrials = 10;
 
     private bool SSVEP;
     private bool isPaused;
@@ -45,7 +46,7 @@ public class SSVEPManager : MonoBehaviour {
                 SSVEP = false;
                 AdjustSSVEP(SSVEP);
                 // send the pause message
-                // client.SendTCP(pauseMsg);
+                client.SendTCP(pauseMsg);
                 // reset the timer
                 elapsedTime = 0f;
             }
@@ -56,9 +57,10 @@ public class SSVEPManager : MonoBehaviour {
                 SSVEP = true;
                 AdjustSSVEP(SSVEP);
                 // send the resume message
-                // client.SendTCP(resumeMsg);
+                client.SendTCP(resumeMsg);
                 // reset the timer
                 elapsedTime = 0f;
+
             }
         }
     }
@@ -70,6 +72,7 @@ public class SSVEPManager : MonoBehaviour {
             if (!status) ssvep.StopSSVEP();
             // then disable the script
             ssvep.enabled = status;
+            experimentData.SSVEPChange(status);
         }
     }
 
