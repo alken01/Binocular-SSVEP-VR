@@ -15,14 +15,15 @@ public class ExperimentManager : MonoBehaviour
         client = GetComponent<TCPClient>();
         experimentDatas = GetComponentsInChildren<ExperimentData>();
 
-        // set the current experiment number to -1
-        SetExperiment(-1);
+        client.SendTCP("ExperimentManager started.");
+        client.SendTCP("Number of experiments: " + experimentDatas.Length);
     }
 
    
-    private void FixedUpdate() {
+    private void Update() {
         // If two is pressed, go to the next experiment
         if (OVRInput.GetDown(OVRInput.Button.Two)) {
+            client.SendTCP("NextExperiment called. Experiment number: " + currentExperimentNumber);
             NextExperiment();
         }
     }
@@ -30,13 +31,14 @@ public class ExperimentManager : MonoBehaviour
     public void SetExperiment(int experimentNumber)
     {
         currentExperimentNumber = experimentNumber;
+        client.SendTCP("SetExperiment called. Experiment number: " + currentExperimentNumber);
         UpdateExperimentVisibility();
     }
 
     public void NextExperiment()
     {
         currentExperimentNumber++;
-        // if the currentExperimentNumber is out of bounds, set it to -1
+        client.SendTCP("NextExperiment called. Experiment number: " + currentExperimentNumber);
         if (currentExperimentNumber >= experimentDatas.Length)
         {
             currentExperimentNumber = -1;
@@ -48,8 +50,10 @@ public class ExperimentManager : MonoBehaviour
     {
         foreach (ExperimentData experimentData in experimentDatas)
         {
-            // adjust to make visible only the currentExperimentNumber 
-            experimentData.SetVisibility(experimentData.GetExperimentNumber() == currentExperimentNumber);
+            bool shouldBeVisible = experimentData.GetExperimentNumber() == currentExperimentNumber;
+            experimentData.SetVisibility(shouldBeVisible);
+            client.SendTCP("Experiment " + experimentData.GetExperimentNumber() + " visibility: " + shouldBeVisible);
         }
     }
+
 }

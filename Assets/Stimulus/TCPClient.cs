@@ -50,7 +50,7 @@ public class TCPClient : MonoBehaviour {
     }
 
     public void SendTCP(string message) {
-        byte[] data = Encoding.UTF8.GetBytes(message);
+        byte[] data = Encoding.UTF8.GetBytes(message+"\n");
         stream.Write(data, 0, data.Length);
     }
 

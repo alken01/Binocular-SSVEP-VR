@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SSVEPManager : MonoBehaviour {
     [SerializeField] private string startMsg = "start";
@@ -6,74 +7,54 @@ public class SSVEPManager : MonoBehaviour {
     [SerializeField] private string pauseMsg = "pause";
     [SerializeField] private float epochTime = 6f;
     [SerializeField] private float pauseTime = 3f;
-    [SerializeField] private int numberOfTrials = 10;
 
-    private bool SSVEP;
-    private bool isPaused;
-    private float elapsedTime;
-    
     private TCPClient client;
-    
-    private ExperimentData experimentData;
     private SSVEP[] ssvepComponents;
-    private bool start;
+    private ExperimentData experimentData;
 
     private void Awake() {
-        experimentData = GetComponent<ExperimentData>();
-        startMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + startMsg;
-        resumeMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + resumeMsg;
-        pauseMsg = "Experiment " + experimentData.GetExperimentNumber() + ": " + pauseMsg;
         client = GetComponentInParent<TCPClient>();
         ssvepComponents = GetComponentsInChildren<SSVEP>(true);
+        experimentData = GetComponent<ExperimentData>();
     }
 
-    public void SetStart(bool set){
-        start = set;
-        SSVEP = set;
-        AdjustSSVEP(start);
-        if(set) client.SendTCP(startMsg);
+    public void StartSSVEP() {
+        StartCoroutine(RunExperiment());
     }
 
-    private void Update() {
-        if (start != true) return;
+    public void StopSSVEP() {
+        StopAllCoroutines();
+        SetSSVEPComponents(false);
+    }
 
-        elapsedTime += Time.deltaTime;
+    private IEnumerator RunExperiment() {
+        client.SendTCP(startMsg);
+        while (true) {
+            // Activate SSVEP components
+            SetSSVEPComponents(true);
 
-        if (SSVEP) {
-            // if epoch time is over
-            if (elapsedTime >= epochTime) {
-                // disable the SSVEP 
-                SSVEP = false;
-                AdjustSSVEP(SSVEP);
-                // send the pause message
-                client.SendTCP(pauseMsg);
-                // reset the timer
-                elapsedTime = 0f;
-            }
-        } else { // no SSVEP atm
-            // if pause time is over
-            if (elapsedTime >= pauseTime) {
-                // enable the SSVEP 
-                SSVEP = true;
-                AdjustSSVEP(SSVEP);
-                // send the resume message
-                client.SendTCP(resumeMsg);
-                // reset the timer
-                elapsedTime = 0f;
+            // Send resume message to TCP client
+            client.SendTCP(resumeMsg);
 
-            }
+            // Wait epoch time
+            yield return new WaitForSeconds(epochTime);
+
+            // Deactivate SSVEP components
+            SetSSVEPComponents(false);
+
+            // Send pause message to TCP client
+            client.SendTCP(pauseMsg);
+
+            // Wait pause time
+            yield return new WaitForSeconds(pauseTime);
         }
     }
 
-    private void AdjustSSVEP(bool status) {
-    // Loop through all the ssvep components
+    private void SetSSVEPComponents(bool status) {
         foreach (SSVEP ssvep in ssvepComponents) {
-            // if false, return the alpha value to 1f
             if (!status) ssvep.StopSSVEP();
-            // then disable the script
             ssvep.enabled = status;
-            experimentData.SSVEPChange(status);
+            // experimentData.SSVEPChange(status);
         }
     }
-
 }

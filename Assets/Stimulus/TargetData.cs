@@ -14,13 +14,13 @@ public class TargetData : MonoBehaviour
         experimentData = transform.parent.GetComponent<ExperimentData>();
         
         // check if the target has a child called cross
-        if (transform.Find("Cross") != null)
+        if (transform.Find("cross") != null)
         {
             // if it has, save the cross object
-            cross = transform.Find("Cross").gameObject;
+            cross = transform.Find("cross").gameObject;
         }
         // get the target number
-        targetNumber = GlobalVariables.getTargetNr(experimentData.getExperimentNumber());
+        targetNumber = GlobalVariables.getTargetNr(experimentData.GetExperimentNumber());
 
     }
 
