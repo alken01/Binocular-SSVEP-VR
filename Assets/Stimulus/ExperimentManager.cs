@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ExperimentManager : MonoBehaviour
 {
@@ -26,13 +27,11 @@ public class ExperimentManager : MonoBehaviour
         }
         
         currentExperimentNumber = -1;
-        // experimentsStarted = false;
     }
 
 
     public void StartExperimentManager(){
         currentExperimentNumber = 0;
-        // experimentsStarted = true;
         UpdateExperimentVisibility();
     }
 
@@ -43,7 +42,6 @@ public class ExperimentManager : MonoBehaviour
         if (currentExperimentNumber == experimentDatas.Length)
         {
             // Stop the experiments
-            // experimentsStarted = false;
             client.SendTCP("NextExperiment called. All experiments are done.");
             return;
         }
@@ -64,9 +62,7 @@ public class ExperimentManager : MonoBehaviour
             if (shouldBeVisible){
                 experimentData.StartExperiment();
             }
-            else{
-                experimentData.SetVisibility(false);
-            }
         }
     }
+    
 }

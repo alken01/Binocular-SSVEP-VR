@@ -8,8 +8,6 @@ public class ExperimentData : MonoBehaviour
     private SSVEPManager ssvepManager;
     private List<GameObject> crossList = new List<GameObject>();
 
-    private bool experimentEnded = false;
-
     private void Awake()
     {
         experimentNumber = GlobalVariables.getExperimentNr();
@@ -29,19 +27,21 @@ public class ExperimentData : MonoBehaviour
         }
 
         // Subscribe to the event
-        // ssvepManager.OnExperimentEnded += HandleExperimentEnded;
+        ssvepManager.OnExperimentEnded += HandleExperimentEnded;
+
+        SetVisibility(false);
     }
     public void StartExperiment()
     {
-        if(!experimentEnded)
-            SetVisibility(true);
+        SetVisibility(true);
+        ssvepManager.StartSSVEPManager();
     }
 
 
     private void OnDestroy()
     {
         // Unsubscribe from the event
-        // ssvepManager.OnExperimentEnded -= HandleExperimentEnded;
+        ssvepManager.OnExperimentEnded -= HandleExperimentEnded;
     }
 
     public int GetExperimentNumber()
@@ -54,18 +54,15 @@ public class ExperimentData : MonoBehaviour
         experimentVisibility.SetVisibility(visible);
     }
 
-    // private void HandleExperimentEnded()
-    // {
-    //     FindObjectOfType<ExperimentManager>().NextExperiment();
-    //     experimentEnded = true;
-    // }
-
-    // public void SetCrossVisibility(int target, bool visible)
-    // {
-    //     if (target >= 0 && target < crossList.Count)
-    //     {
-    //         crossList[target].SetActive(visible);
-    //     }
-    // }
+    private void HandleExperimentEnded()
+    {
+        // after the experiment has ended
+        // set the visibility of the experiment to false
+        SetVisibility(false);
+        // unsubscribe from the event
+        OnDestroy();
+        // start the next one
+        FindObjectOfType<ExperimentManager>().NextExperiment();
+    }
 
 }

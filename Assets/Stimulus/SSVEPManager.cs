@@ -7,16 +7,16 @@ public class SSVEPManager : MonoBehaviour {
     [SerializeField] private string startMsg = "start";
     [SerializeField] private string resumeMsg = "resume";
     [SerializeField] private string pauseMsg = "pause";
-    [SerializeField] private float epochTime = 6f;
-    [SerializeField] private float pauseTime = 3f;
-    [SerializeField] private int numberOfCycles = 3;
+    [SerializeField] private float epochTime = 2f;
+    [SerializeField] private float pauseTime = 1f;
+    [SerializeField] private int numberOfCycles = 2;
 
     private TCPClient client;
     private SSVEP[] ssvepComponents;
     private ExperimentData experimentData;
     private bool start = false;
 
-    // public event Action OnExperimentEnded;
+    public event Action OnExperimentEnded;
 
     private void Start() {
         client = GetComponentInParent<TCPClient>();
@@ -35,12 +35,14 @@ public class SSVEPManager : MonoBehaviour {
         StartCoroutine(RunExperiment());
     }
 
-    public void StopSSVEPManager()
+    private void StopSSVEPManager()
     {
         if(!start) return;
         StopAllCoroutines();
         SetSSVEPComponents(false);
         client.SendTCP("Experiment " + experimentData.GetExperimentNumber() + " ended.");
+        // tell the experiment manager that the experiment has ended, so it can start the next one
+        OnExperimentEnded?.Invoke();
     }
 
     private IEnumerator RunExperiment() {

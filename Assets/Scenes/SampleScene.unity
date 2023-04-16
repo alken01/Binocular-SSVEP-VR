@@ -1876,9 +1876,9 @@ MonoBehaviour:
   startMsg: start
   resumeMsg: resume
   pauseMsg: pause
-  epochTime: 6
-  pauseTime: 2
-  numberOfCycles: 3
+  epochTime: 2
+  pauseTime: 1
+  numberOfCycles: 2
 --- !u!114 &854905466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2460,7 +2460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1489482455
 Transform:
   m_ObjectHideFlags: 0
@@ -2517,9 +2517,9 @@ MonoBehaviour:
   startMsg: start
   resumeMsg: resume
   pauseMsg: pause
-  epochTime: 6
-  pauseTime: 3
-  numberOfCycles: 3
+  epochTime: 2
+  pauseTime: 1
+  numberOfCycles: 2
 --- !u!1 &1509881920
 GameObject:
   m_ObjectHideFlags: 0
