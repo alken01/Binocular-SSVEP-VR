@@ -1,74 +1,71 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ExperimentData : MonoBehaviour
 {
-
     private int experimentNumber;
+    private ExperimentVisibility experimentVisibility;
     private SSVEPManager ssvepManager;
-    private int numberOfTargets;
-    private int currentTarget;
+    private List<GameObject> crossList = new List<GameObject>();
 
-    private TCPClient client;
-    private void Start()
+    private bool experimentEnded = false;
+
+    private void Awake()
     {
-        client = GetComponentInParent<TCPClient>();
-
         experimentNumber = GlobalVariables.getExperimentNr();
+        experimentVisibility = GetComponent<ExperimentVisibility>();
         ssvepManager = GetComponent<SSVEPManager>();
-        SetVisibility(false);
 
-        numberOfTargets = transform.childCount;
-        currentTarget = -1;
-
-        client.SendTCP("Experiment " + GetExperimentNumber() + " started.");
-    }
-
-
-    public void SSVEPChange(bool status)
-    {
-        // if SSVEP is on hide all the targets' cross
-        // else show the current target's cross
-        // do a circular increment of the currentTarget
-        if (status)
+        // Get all the crosses, they are grandchildren of the ExperimentData object
+        foreach (Transform child in transform)
         {
-            foreach (Transform child in transform)
+            foreach (Transform grandchild in child)
             {
-                child.GetComponent<TargetData>().HideCross();
+                if (grandchild.gameObject.name == "Cross")
+                {
+                    crossList.Add(grandchild.gameObject);
+                }
             }
         }
-        else
-        {
-            currentTarget = (currentTarget + 1) % numberOfTargets;
-            transform.GetChild(currentTarget).GetComponent<TargetData>().ShowCross();
-        }
+
+        // Subscribe to the event
+        // ssvepManager.OnExperimentEnded += HandleExperimentEnded;
+    }
+    public void StartExperiment()
+    {
+        if(!experimentEnded)
+            SetVisibility(true);
     }
 
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from the event
+        // ssvepManager.OnExperimentEnded -= HandleExperimentEnded;
+    }
 
     public int GetExperimentNumber()
     {
         return experimentNumber;
     }
 
-    public void SetExperimentNumber(int number)
-    {
-        experimentNumber = number;
-    }
-
     public void SetVisibility(bool visible)
     {
-        // adjust the SSVEP Manager
-        if(visible) ssvepManager.StartSSVEP();
-        else ssvepManager.StopSSVEP();
-
-        // make it visible
-        gameObject.SetActive(visible);
-        client.SendTCP("Experiment " + GetExperimentNumber() + " SetVisibility called. Visible: " + visible);
+        experimentVisibility.SetVisibility(visible);
     }
 
-    public void NextTarget()
-    {
-        currentTarget = (currentTarget + 1) % numberOfTargets;
-    }
+    // private void HandleExperimentEnded()
+    // {
+    //     FindObjectOfType<ExperimentManager>().NextExperiment();
+    //     experimentEnded = true;
+    // }
 
-    
+    // public void SetCrossVisibility(int target, bool visible)
+    // {
+    //     if (target >= 0 && target < crossList.Count)
+    //     {
+    //         crossList[target].SetActive(visible);
+    //     }
+    // }
+
 }

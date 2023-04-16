@@ -31,11 +31,6 @@ public class SSVEP : MonoBehaviour {
 
         // Change the alpha value
         objectRenderer.material.color = new Color(1f, 1f, 1f, value);
-
-        // if(elapsedTime<5 && sendData) {
-        //     string data = elapsedTime + "," + value + "\n";
-        //     client.SendTCP(data);
-        // }
     }
 
     public void StopSSVEP(){
