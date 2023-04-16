@@ -32,7 +32,7 @@ public class TCPClient : MonoBehaviour {
         }
     }
 
-    private void ConnectToServer() {
+    private async void ConnectToServer() {
         try {
             // create the TCP client and connect to the server
             client = new TcpClient(serverIP, serverPort);
@@ -40,18 +40,18 @@ public class TCPClient : MonoBehaviour {
 
             // send the start message
             byte[] data = Encoding.UTF8.GetBytes(startMessage);
-            stream.Write(data, 0, data.Length);
+            await stream.WriteAsync(data, 0, data.Length);
 
             // wait for the response
             data = new byte[256];
-            int bytes = stream.Read(data, 0, data.Length);
+            int bytes = await stream.ReadAsync(data, 0, data.Length);
             string response = Encoding.UTF8.GetString(data, 0, bytes);
 
             // if the response is the start message, start the experiment
             if (response == startMessage) {
                 isConnected = true;
                 data = Encoding.UTF8.GetBytes("Connected to server.");
-                stream.Write(data, 0, data.Length);
+                await stream.WriteAsync(data, 0, data.Length);
                 // start the first experiment
                 SendTCP("Starting experiment 0.");
                 experimentManager.StartExperimentManager();

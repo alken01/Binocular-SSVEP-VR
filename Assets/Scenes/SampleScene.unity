@@ -998,8 +998,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 302988620}
-  - component: {fileID: 302988619}
   - component: {fileID: 302988621}
+  - component: {fileID: 302988622}
   m_Layer: 0
   m_Name: Global
   m_TagString: Untagged
@@ -1007,22 +1007,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &302988619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 302988618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 906cedd789ddd476881f606376fe8e4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverIP: 192.168.0.102
-  serverPort: 42069
-  startMessage: meta
-  endMessage: end
 --- !u!4 &302988620
 Transform:
   m_ObjectHideFlags: 0
@@ -1053,6 +1037,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92dc557fc66b14978b6eb857c698e8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &302988622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302988618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 906cedd789ddd476881f606376fe8e4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverIP: 192.168.0.102
+  serverPort: 42069
+  startMessage: meta
+  endMessage: end
 --- !u!1 &316080947
 GameObject:
   m_ObjectHideFlags: 0
@@ -1891,6 +1891,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a571df01ceb54fe2b7acbd10a18d53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  experimentNumber: 0
+  experimentVisibility: {fileID: 0}
+  ssvepManager: {fileID: 0}
+  crossObjects: []
 --- !u!114 &854905467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2430,6 +2434,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a571df01ceb54fe2b7acbd10a18d53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  experimentNumber: 0
+  experimentVisibility: {fileID: 0}
+  ssvepManager: {fileID: 0}
+  crossObjects: []
 --- !u!114 &1244594886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2502,6 +2510,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a571df01ceb54fe2b7acbd10a18d53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  experimentNumber: 0
+  experimentVisibility: {fileID: 0}
+  ssvepManager: {fileID: 0}
+  crossObjects: []
 --- !u!114 &1489482458
 MonoBehaviour:
   m_ObjectHideFlags: 0

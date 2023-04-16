@@ -1,47 +1,36 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-public class ExperimentData : MonoBehaviour
+public class ExperimentData : MonoBehaviour, ExperimentInterface
 {
-    private int experimentNumber;
-    private ExperimentVisibility experimentVisibility;
-    private SSVEPManager ssvepManager;
-    private List<GameObject> crossList = new List<GameObject>();
+    [SerializeField] private int experimentNumber;
+    [SerializeField] private ExperimentVisibility experimentVisibility;
+    [SerializeField] private SSVEPManager ssvepManager;
+    [SerializeField] private GameObject[] crossObjects;
 
     private void Awake()
     {
-        experimentNumber = GlobalVariables.getExperimentNr();
+        // experimentNumber = GlobalVariables.getExperimentNr();
         experimentVisibility = GetComponent<ExperimentVisibility>();
         ssvepManager = GetComponent<SSVEPManager>();
-
-        // Get all the crosses, they are grandchildren of the ExperimentData object
-        foreach (Transform child in transform)
-        {
-            foreach (Transform grandchild in child)
-            {
-                if (grandchild.gameObject.name == "Cross")
-                {
-                    crossList.Add(grandchild.gameObject);
-                }
-            }
-        }
 
         // Subscribe to the event
         ssvepManager.OnExperimentEnded += HandleExperimentEnded;
 
-        SetVisibility(false);
+        // Set the visibility of the experiment to false
+        // experimentVisibility.SetVisibility(false);
     }
+    
     public void StartExperiment()
     {
-        SetVisibility(true);
+        experimentVisibility.SetVisibility(true);
         ssvepManager.StartSSVEPManager();
     }
 
-
-    private void OnDestroy()
+    public void EndExperiment()
     {
-        // Unsubscribe from the event
+        experimentVisibility.SetVisibility(false);
         ssvepManager.OnExperimentEnded -= HandleExperimentEnded;
+        FindObjectOfType<ExperimentManager>().NextExperiment();
     }
 
     public int GetExperimentNumber()
@@ -54,15 +43,17 @@ public class ExperimentData : MonoBehaviour
         experimentVisibility.SetVisibility(visible);
     }
 
+    public void SetCrossVisibility(bool visible)
+    {
+        foreach (GameObject crossObject in crossObjects)
+        {
+            crossObject.SetActive(visible);
+        }
+    }
+
     private void HandleExperimentEnded()
     {
-        // after the experiment has ended
-        // set the visibility of the experiment to false
-        SetVisibility(false);
-        // unsubscribe from the event
-        OnDestroy();
-        // start the next one
-        FindObjectOfType<ExperimentManager>().NextExperiment();
+        EndExperiment();
     }
 
 }
