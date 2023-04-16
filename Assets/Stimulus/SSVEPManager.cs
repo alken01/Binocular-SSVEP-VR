@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 using System.Collections;
 
-
 public class SSVEPManager : MonoBehaviour 
 {
     [SerializeField] private string startMsg = "start";
@@ -14,25 +13,36 @@ public class SSVEPManager : MonoBehaviour
 
     private TCPClient client;
     private SSVEP[] ssvepComponents;
-    private ExperimentInterface experiment;
     private bool start = false;
     public event Action OnExperimentEnded;
+    private IExperiment experiment;
+    private int experimentNumber;
+
+    private int currentTarget = 0;
+    private int numberOfTargets= 0;
+
+    private CrossVisible[] crossObjects;
 
     private void Start()
     {
         client = GetComponentInParent<TCPClient>();
         ssvepComponents = GetComponentsInChildren<SSVEP>(true);
-        experiment = GetComponent<ExperimentInterface>() as ExperimentInterface;        
-        startMsg = "start " + experiment.GetExperimentNumber();
-        resumeMsg = "resume " + experiment.GetExperimentNumber();
-        pauseMsg = "pause " + experiment.GetExperimentNumber();
-
-        SetSSVEPComponents(false);
+        experiment = GetComponent<IExperiment>() as IExperiment;   
+        
+        // get the CrossVisible scripts in children
+        crossObjects = GetComponentsInChildren<CrossVisible>(true);
+        numberOfTargets = crossObjects.Length;
+        
     }
 
-    public void StartSSVEPManager() 
+    public void StartSSVEPManager(int number) 
     {
         start = true;
+        experimentNumber = number;
+
+        startMsg = "start ";
+        resumeMsg = "resume " + experimentNumber;
+        pauseMsg = "pause " + experimentNumber;
         StartCoroutine(RunExperiment());
     }
 
@@ -41,7 +51,7 @@ public class SSVEPManager : MonoBehaviour
         if(!start) return;
         StopAllCoroutines();
         SetSSVEPComponents(false);
-        client.SendTCP($"Experiment {experiment.GetExperimentNumber()} ended.");
+        client.SendTCP($"Experiment {experimentNumber} ended.");
 
         // tell the experiment manager that the experiment has ended, so it can start the next one
         OnExperimentEnded?.Invoke();
@@ -51,15 +61,21 @@ public class SSVEPManager : MonoBehaviour
     {
         client.SendTCP(startMsg);
 
-        for(int i = 0; i < numberOfCycles; i++) {
+        for(int i = 0; i < numberOfCycles*numberOfTargets; i++) {
             // Deactivate SSVEP components
             SetSSVEPComponents(false);
 
             // Send pause message to TCP client
             client.SendTCP(pauseMsg+ " " + i);
 
+            // Show next target's cross
+            ShowCross();
+
             // Wait pause time
             yield return new WaitForSeconds(pauseTime);
+
+            // Hide cross
+            HideCross();
 
             // Activate SSVEP components
             SetSSVEPComponents(true);
@@ -84,4 +100,21 @@ public class SSVEPManager : MonoBehaviour
             ssvep.enabled = status;
         }
     }
+
+
+    public void ShowCross() 
+    {
+        crossObjects[currentTarget].SetCrossVisibility(true);
+    }
+
+    public void HideCross() 
+    {
+        crossObjects[currentTarget].SetCrossVisibility(false);
+        currentTarget = (currentTarget + 1) % crossObjects.Length;
+    }
+
+
+
 }
+
+

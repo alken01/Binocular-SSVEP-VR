@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class ExperimentData : MonoBehaviour, ExperimentInterface
+public class ExperimentData : MonoBehaviour, IExperiment
 {
-    [SerializeField] private int experimentNumber;
     [SerializeField] private ExperimentVisibility experimentVisibility;
     [SerializeField] private SSVEPManager ssvepManager;
     [SerializeField] private GameObject[] crossObjects;
+    private int experimentNumber;
 
     private void Awake()
     {
-        // experimentNumber = GlobalVariables.getExperimentNr();
+        experimentNumber = GlobalVariables.getExperimentNr();
         experimentVisibility = GetComponent<ExperimentVisibility>();
         ssvepManager = GetComponent<SSVEPManager>();
 
@@ -23,7 +23,7 @@ public class ExperimentData : MonoBehaviour, ExperimentInterface
     public void StartExperiment()
     {
         experimentVisibility.SetVisibility(true);
-        ssvepManager.StartSSVEPManager();
+        ssvepManager.StartSSVEPManager(experimentNumber);
     }
 
     public void EndExperiment()
