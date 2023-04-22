@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class ExperimentData : MonoBehaviour, IExperiment
 {
-    [SerializeField] private ExperimentVisibility experimentVisibility;
-    [SerializeField] private SSVEPManager ssvepManager;
-    [SerializeField] private GameObject[] crossObjects;
-    private int experimentNumber;
+    [SerializeField] private int experimentNumber;
+    private ExperimentVisibility experimentVisibility;
+    private SSVEPManager ssvepManager;
+    private GameObject[] crossObjects;
 
     private void Awake()
     {
-        experimentNumber = GlobalVariables.getExperimentNr();
+        GlobalVariables.setExperimentNr(experimentNumber);
+        
         experimentVisibility = GetComponent<ExperimentVisibility>();
         ssvepManager = GetComponent<SSVEPManager>();
 

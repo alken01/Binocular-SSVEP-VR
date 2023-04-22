@@ -8,7 +8,7 @@ public class TCPClient : MonoBehaviour {
     [SerializeField] private string serverIP = "192.168.0.100";
     [SerializeField] private int serverPort = 42069;
     [SerializeField] private string startMessage = "meta";
-    [SerializeField] private string endMessage = "end";
+    [SerializeField] private string endMessage = "end_meta";
 
     private TcpClient client;
     private NetworkStream stream;
@@ -69,15 +69,17 @@ public class TCPClient : MonoBehaviour {
             messageList.Add(message);
             return;
         }
-
+        // if there are messages in the list, send them first
         if (messageList.Count > 0) {
             foreach (string msg in messageList) {
-                byte[] dataOld = Encoding.UTF8.GetBytes(msg+"\n");
+                byte[] dataOld = Encoding.UTF8.GetBytes(msg);
                 stream.Write(dataOld, 0, dataOld.Length);
             }
             messageList.Clear();
         }
-        byte[] data = Encoding.UTF8.GetBytes(message+"\n");
+        
+        // send the new message
+        byte[] data = Encoding.UTF8.GetBytes(message);
         stream.Write(data, 0, data.Length);
 
     }

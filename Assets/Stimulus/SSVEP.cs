@@ -4,18 +4,16 @@ using System.Collections.Generic;
 public class SSVEP : MonoBehaviour {
     [SerializeField] private float frequency;
     [SerializeField] private bool sine;
-    [SerializeField] private bool sendData = false;
-
+    [SerializeField] private bool imageStaticOnZeroFreq = false;
+    
     private Renderer objectRenderer;
-    private float elapsedTime;
-    private TCPClient client;
+    private float elapsedTime;    
 
     private void Start() {
         objectRenderer = GetComponent<Renderer>();
         elapsedTime = 0f;
         // if the frequency is 0, make the object invisible
-        if (frequency == 0f) objectRenderer.enabled = false;
-        if(sendData) client = GetComponentInParent<TCPClient>();
+        if (frequency == 0f) objectRenderer.enabled = imageStaticOnZeroFreq;
     }
 
     private void FixedUpdate() {

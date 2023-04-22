@@ -17,8 +17,16 @@ public class ExperimentManager : MonoBehaviour
         // get all the ExperimentData objects
         experimentDatas = FindObjectsOfType<ExperimentData>();
 
+        // reorder the experiments based on their experiment number
+        experimentDatas = experimentDatas.OrderBy(experimentData => experimentData.GetExperimentNumber()).ToArray();
+
         client.SendTCP("ExperimentManager started.");
         client.SendTCP($"Number of experiments: {experimentDatas.Length}");
+
+        foreach (ExperimentData experimentData in experimentDatas)
+        {
+            experimentData.SetVisibility(false);
+        }
 
     }
 

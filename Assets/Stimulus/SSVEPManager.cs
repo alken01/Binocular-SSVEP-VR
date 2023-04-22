@@ -19,7 +19,7 @@ public class SSVEPManager : MonoBehaviour
     private int experimentNumber;
 
     private int currentTarget = 0;
-    private int numberOfTargets= 0;
+    private int numberOfTargets = 0;
 
     private CrossVisible[] crossObjects;
 
@@ -40,9 +40,9 @@ public class SSVEPManager : MonoBehaviour
         start = true;
         experimentNumber = number;
 
-        startMsg = "start ";
-        resumeMsg = "resume " + experimentNumber;
-        pauseMsg = "pause " + experimentNumber;
+        startMsg = "start_" + experimentNumber;
+        resumeMsg = "resume_" + experimentNumber;
+        pauseMsg = "pause_" + experimentNumber;
         StartCoroutine(RunExperiment());
     }
 
@@ -51,22 +51,25 @@ public class SSVEPManager : MonoBehaviour
         if(!start) return;
         StopAllCoroutines();
         SetSSVEPComponents(false);
-        client.SendTCP($"Experiment {experimentNumber} ended.");
+        client.SendTCP($"Experiment {experimentNumber} finished.");
 
         // tell the experiment manager that the experiment has ended, so it can start the next one
         OnExperimentEnded?.Invoke();
     }
 
     private IEnumerator RunExperiment() 
-    {
-        client.SendTCP(startMsg);
-
+    {        
+        int currentTarget = -1;
         for(int i = 0; i < numberOfCycles*numberOfTargets; i++) {
+
             // Deactivate SSVEP components
             SetSSVEPComponents(false);
 
             // Send pause message to TCP client
-            client.SendTCP(pauseMsg+ " " + i);
+            if(currentTarget >= 0){
+                // this pause corresponds to the previous target        
+                client.SendTCP(pauseMsg + currentTarget);
+            }
 
             // Show next target's cross
             ShowCross();
@@ -80,12 +83,18 @@ public class SSVEPManager : MonoBehaviour
             // Activate SSVEP components
             SetSSVEPComponents(true);
 
+            // update the current target
+            currentTarget = i % numberOfTargets;
+
             // Send resume message to TCP client
-            client.SendTCP(resumeMsg+ " " + i);
+            client.SendTCP(resumeMsg + currentTarget);
 
             // Wait epoch time
             yield return new WaitForSeconds(epochTime);
         }
+        // send the last pause message to TCP client
+        client.SendTCP(pauseMsg + currentTarget);
+
         StopSSVEPManager();
     }
 

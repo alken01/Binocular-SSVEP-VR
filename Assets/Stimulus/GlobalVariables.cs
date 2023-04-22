@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO remove this class and adjust the code
+
 // static class for GlobalVariables
 public static class GlobalVariables
 {
@@ -14,6 +16,19 @@ public static class GlobalVariables
         EXPERIMENT_NR++;
         return EXPERIMENT_NR - 1;
     }
+
+    public static void setExperimentNr(int newExperimentNr)
+    {
+        if (newExperimentNr < 0)
+        {
+            // Throw an exception if the experiment number is negative
+            throw new System.ArgumentException("Experiment number cannot be negative.");
+        }
+
+        TARGETS.Add(new List<int>());
+        EXPERIMENT_NR = newExperimentNr++;
+    }
+
 
     public static int getTargetNr(int experimentNumber)
     {
